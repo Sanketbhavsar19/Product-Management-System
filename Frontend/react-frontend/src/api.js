@@ -1,36 +1,7 @@
-// const API_BASE = 'http://localhost:5000/api';
-
-// export const getCategories = async () => {
-//     const response = await fetch(`${API_BASE}/categories`);
-//     return response.json();
-// };
-
-// export const addCategory = async (categoryName) => {
-//     const response = await fetch(`${API_BASE}/categories`, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ CategoryName: categoryName })
-//     });
-//     return response.json();
-// };
-
-// export const getProducts = async (page, pageSize) => {
-//     const response = await fetch(`${API_BASE}/products?page=${page}&pageSize=${pageSize}`);
-//     return response.json();
-// };
-
-// export const addProduct = async (productName, categoryId) => {
-//     const response = await fetch(`${API_BASE}/products`, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ ProductName: productName, CategoryId: categoryId })
-//     });
-//     return response.json();
-// };
 
 const API_BASE = "http://localhost:5000/api";
 
-// ✅ Fetch all categories (Read)
+
 export const getCategories = async () => {
   try {
     const response = await fetch(`${API_BASE}/categories`);
@@ -42,7 +13,7 @@ export const getCategories = async () => {
   }
 };
 
-// ✅ Add a new category (Create)
+// Add a new category (Create)
 export const addCategory = async (categoryName) => {
   try {
     const response = await fetch(`${API_BASE}/categories`, {
@@ -59,7 +30,7 @@ export const addCategory = async (categoryName) => {
   }
 };
 
-// 🔄 Update a category (Update)
+// Update a category (Update)
 export const updateCategory = async (categoryId, categoryName) => {
   try {
     const response = await fetch(`${API_BASE}/categories/${categoryId}`, {
@@ -76,7 +47,7 @@ export const updateCategory = async (categoryId, categoryName) => {
   }
 };
 
-// ❌ Delete a category (Delete)
+// Delete a category (Delete)
 export const deleteCategory = async (categoryId) => {
   try {
     const response = await fetch(`${API_BASE}/categories/${categoryId}`, {
@@ -91,7 +62,7 @@ export const deleteCategory = async (categoryId) => {
   }
 };
 
-// ✅ Fetch paginated products (Read) with default values
+// Fetch paginated products (Read) with default values
 export const getProducts = async (page = 1, pageSize = 10) => {
   try {
     const response = await fetch(`${API_BASE}/products?page=${page}&pageSize=${pageSize}`);
@@ -103,7 +74,7 @@ export const getProducts = async (page = 1, pageSize = 10) => {
   }
 };
 
-// ✅ Add a new product (Create)
+// Add a new product (Create)
 export const addProduct = async (productName, categoryId) => {
   try {
     const response = await fetch(`${API_BASE}/products`, {
@@ -120,7 +91,7 @@ export const addProduct = async (productName, categoryId) => {
   }
 };
 
-// 🔄 Update a product (Update)
+// Update a product (Update)
 export const updateProduct = async (productId, updatedData) => {
   try {
     const response = await fetch(`${API_BASE}/products/${productId}`, {
@@ -139,7 +110,7 @@ export const updateProduct = async (productId, updatedData) => {
   }
 };
 
-// ❌ Delete a product (Delete)
+// Delete a product (Delete)
 export const deleteProduct = async (productId) => {
   try {
     const response = await fetch(`${API_BASE}/products/${productId}`, {

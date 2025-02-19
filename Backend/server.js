@@ -6,11 +6,9 @@ const mysql = require('mysql2');
 const app = express();
 const port = 5000;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Database connection
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -23,7 +21,6 @@ db.connect((err) => {
     console.log('MySQL Connected!');
 });
 
-// Routes for Category CRUD
 app.get('/api/categories', (req, res) => {
     const sql = 'SELECT * FROM categories';
     db.query(sql, (err, results) => {
@@ -67,7 +64,6 @@ app.delete('/api/categories/:id', (req, res) => {
 });
 
 
-// Routes for Product CRUD
 app.get('/api/products', (req, res) => {
     const { page = 1, pageSize = 10 } = req.query;
     const offset = (page - 1) * pageSize;
@@ -91,18 +87,14 @@ app.post('/api/products', (req, res) => {
         res.json({ id: result.insertId, ProductName, CategoryId });
     });
 });
-// Update Product
-// Update a product
 app.put('/api/products/:id', (req, res) => {
-    const productId = req.params.id; // Get the product ID from the URL
-    const { ProductName, CategoryId } = req.body; // Get updated data from the request body
+    const productId = req.params.id; 
+    const { ProductName, CategoryId } = req.body;
 
-    // Validate input
     if (!ProductName || !CategoryId) {
         return res.status(400).json({ error: 'ProductName and CategoryId are required' });
     }
 
-    // SQL query to update the product
     const sql = 'UPDATE products SET ProductName = ?, CategoryId = ? WHERE ProductId = ?';
     db.query(sql, [ProductName, CategoryId, productId], (err, result) => {
         if (err) {
@@ -116,11 +108,10 @@ app.put('/api/products/:id', (req, res) => {
     });
 });
 
-// Delete a product
 app.delete('/api/products/:id', (req, res) => {
-    const productId = req.params.id; // Get the product ID from the URL
+    const productId = req.params.id; 
 
-    // SQL query to delete the product
+    
     const sql = 'DELETE FROM products WHERE ProductId = ?';
     db.query(sql, [productId], (err, result) => {
         if (err) {
@@ -133,7 +124,8 @@ app.delete('/api/products/:id', (req, res) => {
         res.json({ message: 'Product deleted successfully' });
     });
 });
-// Start the server
+
+
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
