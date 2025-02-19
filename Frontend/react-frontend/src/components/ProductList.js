@@ -399,21 +399,26 @@
 
 // export default ProductList;
 
-
-
-
 import React, { useEffect, useState } from "react";
-import { getProducts, addProduct, updateProduct, deleteProduct, getCategories } from "../api";
-import { Button, TextField, Select, MenuItem, InputLabel, FormControl, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { 
+    getProducts, addProduct, updateProductByCategory, deleteProductByCategory, getCategories, 
+    updateProduct,
+    deleteProduct
+} from "../api";
+import { 
+    Button, TextField, Select, MenuItem, InputLabel, FormControl, Dialog, 
+    DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, 
+    TableContainer, TableHead, TableRow, Paper 
+} from "@mui/material";
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [newProduct, setNewProduct] = useState({ ProductName: '', CategoryName: '' });
-    const [editProduct, setEditProduct] = useState(null); // Store the product being edited
+    const [newProduct, setNewProduct] = useState({ ProductName: '', CategoryId: '' });
+    const [editProduct, setEditProduct] = useState(null); // Ensure it's null when no edit is in progress
     const [page, setPage] = useState(1);
     const [pageSize] = useState(10);
-    const [isAdding, setIsAdding] = useState(false); // To toggle the add product form
+    const [isAdding, setIsAdding] = useState(false);
 
     useEffect(() => {
         fetchProducts();
@@ -430,52 +435,53 @@ const ProductList = () => {
     };
 
     const fetchCategories = async () => {
-        const data = await getCategories();
-        setCategories(data);
+        try {
+            const data = await getCategories();
+            setCategories(data);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+        }
     };
 
     const handleAddProduct = async () => {
-        if (newProduct.ProductName && newProduct.CategoryName) {
-            const category = categories.find(cat => cat.CategoryName === newProduct.CategoryName);
-            if (category) {
-                await addProduct(newProduct.ProductName, category.CategoryId);
-                setNewProduct({ ProductName: '', CategoryName: '' });
-                setIsAdding(false); // Hide the form after adding
-                fetchProducts(); // Re-fetch products after adding
-            } else {
-                console.error('Category not found');
+        if (newProduct.ProductName && newProduct.CategoryId) {
+            try {
+                await addProduct(newProduct.ProductName, newProduct.CategoryId);
+                setNewProduct({ ProductName: '', CategoryId: '' });
+                setIsAdding(false);
+                fetchProducts(); // Refresh products
+            } catch (error) {
+                console.error("Error adding product:", error);
             }
         } else {
-            console.error('ProductName and CategoryName are required');
+            console.error("ProductName and CategoryId are required");
         }
     };
 
     const handleEditClick = (product) => {
-        setEditProduct(product); // Set the product to be edited
+        setEditProduct({ 
+            ProductId: product.ProductId, 
+            ProductName: product.ProductName, 
+            CategoryId: product.CategoryId 
+        });
     };
-
-    const handleUpdateProduct = async () => {
-        if (editProduct) {
-            const updatedProduct = {
-                ProductName: editProduct.ProductName,
-                ProductId: editProduct.ProductId
-            };
-            try {
-                await updateProduct(editProduct.ProductId, updatedProduct); // Pass the updated product data
-                setEditProduct(null); // Close modal after update
-                fetchProducts(); // Re-fetch products after update
-            } catch (error) {
-                console.error("Error updating product:", error);
-            }
+     // Handle updating a product
+     const handleUpdateProduct = async (productId, updatedData) => {
+        try {
+            await updateProduct(productId, updatedData);
+            fetchProducts(); // Refresh the product list
+            setEditProduct(null); // Stop editing
+        } catch (error) {
+            console.error('Error updating product:', error);
         }
     };
-
+    
     const handleDeleteProduct = async (productId) => {
         try {
-            await deleteProduct(productId); // Delete the product by ID
-            fetchProducts(); // Re-fetch products after deletion
+            await deleteProduct(productId);
+            fetchProducts(); // Refresh the product list
         } catch (error) {
-            console.error("Error deleting product:", error);
+            console.error('Error deleting product:', error);
         }
     };
 
@@ -483,7 +489,6 @@ const ProductList = () => {
         <div>
             <h2>Products</h2>
             
-            {/* Toggle Add Product Form */}
             <Button
                 variant="contained"
                 color="primary"
@@ -492,7 +497,6 @@ const ProductList = () => {
                 {isAdding ? "Cancel" : "Add Product"}
             </Button>
 
-            {/* Add Product Form */}
             {isAdding && (
                 <div>
                     <TextField
@@ -506,12 +510,11 @@ const ProductList = () => {
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Category</InputLabel>
                         <Select
-                            value={newProduct.CategoryName}
-                            onChange={(e) => setNewProduct({ ...newProduct, CategoryName: e.target.value })}
+                            value={newProduct.CategoryId}
+                            onChange={(e) => setNewProduct({ ...newProduct, CategoryId: e.target.value })}
                         >
-                            <MenuItem value="">Select a category</MenuItem>
                             {categories.map((category) => (
-                                <MenuItem key={category.CategoryId} value={category.CategoryName}>
+                                <MenuItem key={category.CategoryId} value={category.CategoryId}>
                                     {category.CategoryName}
                                 </MenuItem>
                             ))}
@@ -521,7 +524,6 @@ const ProductList = () => {
                 </div>
             )}
 
-            {/* Product List Table */}
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -537,20 +539,27 @@ const ProductList = () => {
                             <TableRow key={product.ProductId}>
                                 <TableCell>{product.ProductId}</TableCell>
                                 <TableCell>{product.ProductName}</TableCell>
-                                <TableCell>{product.CategoryName || "N/A"}</TableCell>
+                                <TableCell>
+                                    {categories.find(cat => cat.CategoryId === product.CategoryId)?.CategoryName || "N/A"}
+                                </TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary" onClick={() => handleEditClick(product)}>Edit</Button>
-                                    <Button variant="contained" color="secondary" onClick={() => handleDeleteProduct(product.ProductId)}>Delete</Button>
+                                    <Button variant="contained" color="secondary" onClick={() => handleDeleteProduct(product.CategoryId)}>Delete</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+
             <div>
-                <Button variant="contained" color="primary" onClick={() => setPage(page - 1)} disabled={page === 1}>Previous</Button>
-                <span>Page {page}</span>
-                <Button variant="contained" color="primary" onClick={() => setPage(page + 1)}>Next</Button>
+                <Button variant="contained" color="primary" onClick={() => setPage(page - 1)} disabled={page === 1}>
+                    Previous
+                </Button>
+                <span> Page {page} </span>
+                <Button variant="contained" color="primary" onClick={() => setPage(page + 1)}>
+                    Next
+                </Button>
             </div>
 
             {/* Edit Product Modal */}

@@ -91,13 +91,18 @@ const CategoryList = () => {
     if (editedCategoryName.trim()) {
       await updateCategory(editingCategory.CategoryId, editedCategoryName);
       setEditingCategory(null);
+      setEditedCategoryName("");
       fetchCategories();
     }
   };
 
   const handleDeleteCategory = async (categoryId) => {
+    try{
     await deleteCategory(categoryId);
     fetchCategories();
+    }catch (error) {
+      console.log("Failed to delete category:", error);
+    }
   };
 
   return (

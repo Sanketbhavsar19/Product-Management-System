@@ -27,6 +27,7 @@
 //     });
 //     return response.json();
 // };
+
 const API_BASE = "http://localhost:5000/api";
 
 // ✅ Fetch all categories (Read)
@@ -59,12 +60,12 @@ export const addCategory = async (categoryName) => {
 };
 
 // 🔄 Update a category (Update)
-export const updateCategory = async (categoryId, updatedName) => {
+export const updateCategory = async (categoryId, categoryName) => {
   try {
     const response = await fetch(`${API_BASE}/categories/${categoryId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ CategoryName: updatedName }),
+      body: JSON.stringify({ CategoryName: categoryName }),
     });
 
     if (!response.ok) throw new Error("Failed to update category");
@@ -120,19 +121,21 @@ export const addProduct = async (productName, categoryId) => {
 };
 
 // 🔄 Update a product (Update)
-export const updateProduct = async (productId, updatedProduct) => {
+export const updateProduct = async (productId, updatedData) => {
   try {
     const response = await fetch(`${API_BASE}/products/${productId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedProduct),
+      body: JSON.stringify(updatedData),
     });
 
-    if (!response.ok) throw new Error("Failed to update product");
+    if (!response.ok){
+       throw new Error("Failed to update product");
+    }
     return await response.json();
   } catch (error) {
     console.error("Error updating product:", error);
-    return null;
+    throw error;
   }
 };
 
