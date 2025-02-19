@@ -401,9 +401,7 @@
 
 import React, { useEffect, useState } from "react";
 import { 
-    getProducts, addProduct, updateProductByCategory, deleteProductByCategory, getCategories, 
-    updateProduct,
-    deleteProduct
+    getProducts, addProduct, getCategories, updateProduct, deleteProduct
 } from "../api";
 import { 
     Button, TextField, Select, MenuItem, InputLabel, FormControl, Dialog, 
@@ -544,7 +542,7 @@ const ProductList = () => {
                                 </TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary" onClick={() => handleEditClick(product)}>Edit</Button>
-                                    <Button variant="contained" color="secondary" onClick={() => handleDeleteProduct(product.CategoryId)}>Delete</Button>
+                                    <Button variant="contained" color="secondary" onClick={() => handleDeleteProduct(product.ProductId)}>Delete</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -589,10 +587,22 @@ const ProductList = () => {
                             </Select>
                         </FormControl>
                     </DialogContent>
+                  
                     <DialogActions>
-                        <Button onClick={handleUpdateProduct} variant="contained" color="primary">Update</Button>
-                        <Button onClick={() => setEditProduct(null)} variant="contained" color="secondary">Cancel</Button>
-                    </DialogActions>
+          <Button 
+        onClick={() => handleUpdateProduct(editProduct.ProductId, { 
+            ProductName: editProduct.ProductName, 
+            CategoryId: editProduct.CategoryId 
+        })} 
+        variant="contained" 
+        color="primary"
+    >
+        Update
+    </Button>
+    <Button onClick={() => setEditProduct(null)} variant="contained" color="secondary">
+        Cancel
+    </Button>
+     </DialogActions>
                 </Dialog>
             )}
         </div>
